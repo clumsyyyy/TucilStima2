@@ -3,20 +3,6 @@ class Point:
         self.x = x
         self.y = y
 
-def findMinAbs(PointsList):
-    min = PointsList[0]
-    for i in range(len(PointsList)):
-        if PointsList[i].x < min.x:
-            min = PointsList[i]
-    return min
-
-def findMaxAbs(PointsList):
-    max = PointsList[0]
-    for i in range(len(PointsList)):
-        if PointsList[i].x > max.x:
-            max = PointsList[i]
-    return max
-
 def determinant(p1, p2, p3):
     return ((p1.x * p2.y) + (p3.x * p1.y) + (p2.x * p3.y) 
             - (p3.x * p2.y) - (p1.x * p3.y) - (p2.x * p1.y))
@@ -30,7 +16,7 @@ def divideList(PointsList, minAbs, maxAbs, flag):
     leftSide = []
     rightSide = []
     for i in range(len(PointsList)):
-        if (PointsList[i].x != minAbs.x and PointsList[i].x != maxAbs.x):
+        if (PointsList[i].x > minAbs.x and PointsList[i].x < maxAbs.x):
             if (determinant(minAbs, maxAbs, PointsList[i]) > 0):
                 leftSide.append(PointsList[i])
             if (determinant(minAbs, maxAbs, PointsList[i]) < 0):
@@ -108,20 +94,44 @@ def ConvexHull(listOfPoints):
     
     # mencari nilai absis minimum dan maksimum untuk
     # mendapatkan garis yang membagi points menjadi 2 bagian
-    minAbs = findMinAbs(PointsList)
-    maxAbs = findMaxAbs(PointsList)
-    mergedList.append(minAbs)
-    mergedList.append(maxAbs)
+    minAbs = PointsList[0]
+    maxAbs = PointsList[len(PointsList) - 1]
+    
+
     leftSide, rightSide = divideList(PointsList, minAbs, maxAbs, 0)
     leftRes = divideLeft(leftSide, minAbs, maxAbs)
     rightRes = divideRight(rightSide, minAbs, maxAbs)
     
-    for x in leftRes:
-        mergedList.append(x)
-    for x in rightRes:
-        mergedList.append(x)
+    # sort leftRes ascending, sort rightRes descending
+    for i in range(len(leftRes) - 1):
+        for j in range(len(leftRes) - i - 1):
+            if (leftRes[j].x > leftRes[j + 1].x):
+                leftRes[j], leftRes[j + 1] = leftRes[j + 1], leftRes[j]
+                
+    for i in range(len(rightRes) - 1):
+        for j in range(len(rightRes) - i - 1):
+            if (rightRes[j].x < rightRes[j + 1].x):
+                rightRes[j], rightRes[j + 1] = rightRes[j + 1], rightRes[j]
+                
+    mergedList.append(minAbs)
+    print("minAbs: ", minAbs.x, minAbs.y)
+    for i in range(len(leftRes)):
+    # for i in range(len(leftRes)):
+        print("leftRes{}".format(i), leftRes[i].x, leftRes[i].y)
+        mergedList.append(leftRes[i])
+        
+    mergedList.append(maxAbs)
+    print("maxAbs", maxAbs.x, maxAbs.y)
+    for i in range(len(rightRes)):
+        
+        print("rightRes{}".format(i), rightRes[i].x, rightRes[i].y)
+        mergedList.append(rightRes[i])
+    
+    mergedList.append(mergedList[0])
+
     mergedX = []
     mergedY = []
+    
     for i in range(len(mergedList)):
         mergedX.append(float(mergedList[i].x))
         mergedY.append(float(mergedList[i].y))
