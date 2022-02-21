@@ -2,151 +2,98 @@ class Point:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        
-# fungsi untuk menentukan orientasi antara tiga buah titik
-# return string yang menandakan orientasi tiga buah titik
-def orientationOf(a, b, c):
-    slope = (b.y - a.y)*(c.x - b.x) - (b.x - a.x)*(c.y - b.y)
+
+def findMinAbs(PointsList):
+    min = PointsList[0]
+    for i in range(len(PointsList)):
+        if PointsList[i].x < min.x:
+            min = PointsList[i]
+    return min
+
+def findMaxAbs(PointsList):
+    max = PointsList[0]
+    for i in range(len(PointsList)):
+        if PointsList[i].x > max.x:
+            max = PointsList[i]
+    return max
+
+def determinant(p1, p2, p3):
+    return ((p1.x * p2.y) + (p3.x * p1.y) + (p2.x * p3.y) 
+            - (p3.x * p2.y) - (p1.x * p3.y) - (p2.x * p1.y))
     
-    if (slope > 0):
-        return "CLOCKWISE" #1
-    elif (slope == 0):
-        return "COLINEAR" #0
+def distance(p1, p2, p3):
+    return abs((p3.y - p1.y) * (p2.x - p1.x) - (p2.y - p1.y) * (p3.x - p1.x))
+    
+# fungsi untuk membagi list menjadi dua list sesuai dengan posisi determinan dan garis
+# return dua buah list
+def divideList(PointsList, minAbs, maxAbs, flag):
+    leftSide = []
+    rightSide = []
+    for i in range(len(PointsList)):
+        if (PointsList[i].x != minAbs.x and PointsList[i].x != maxAbs.x):
+            if (determinant(minAbs, maxAbs, PointsList[i]) > 0):
+                leftSide.append(PointsList[i])
+            if (determinant(minAbs, maxAbs, PointsList[i]) < 0):
+                rightSide.append(PointsList[i])
+
+    # titik antara garis tidak bisa untuk membuat convex hull, abaikan
+    if (flag > 0):
+        return leftSide
+    elif (flag < 0):
+        return rightSide
     else:
-        return "COUNTERCLOCKWISE" #-1
-    
-def divideList(PointsList):
-    length = len(PointsList)
-    
-    # apabila panjang list berukuran 5 atau kurang, langsung saja masukkan
-    # ke dalam fungsi yang memproses bruteforce-nya
-    if (length < 5):
-        return bruteHull(PointsList)
-    
-    # jika tidak, lakukan proses pembagian list
-    # karena list sudah terurut sesuai koordinat x, maka
-    # pembagian dapat dilakukan dengan membagi koordinat
-    # dari awal hingga tengah list dan tengah list hingga akhir
-    leftPoints = []
-    for i in range(length // 2):
-        leftPoints.append(PointsList[i])
-        
-    rightPoints = []
-    for i in range(length // 2, length):
-        rightPoints.append(PointsList[i])
+        return leftSide, rightSide
 
-    # gunakan rekursi untuk membagi lagi list kiri dan kanan
-    # merge kedua list tersebut berdasarkan tangent dari kedua titik
-    leftPart = divideList(leftPoints)
-    rightPart = divideList(rightPoints)
-    return mergeList(leftPart, rightPart)
-
-def mergeList(leftPoints, rightPoints):
-    leftSize = len(leftPoints)
-    rightSize = len(rightPoints)
-    
-    # cari titik paling kanan di sisi kiri
-    # dan titik paling kiri di sisi kanan
-    # wait bukannya kalo udah disort berarti 
-    # leftmostIndex = 0, rightmostIndex = 0?
-    rightmost = 0;
-    for i in range(1, leftSize):
-        if (leftPoints[i].x > leftPoints[rightmost].x):
-            rightmost = i
-        elif (leftPoints[i].x == leftPoints[rightmost].x):
-            if (leftPoints[i].y < leftPoints[rightmost].y):
-                rightmost = i  
-            
-            
-    leftmost = 0;
-    for i in range(1, rightSize):
-        if (rightPoints[i].x < rightPoints[leftmost].x):
-            leftmost = i
-        elif (rightPoints[i].x == rightPoints[leftmost].x):
-            if (rightPoints[i].y > rightPoints[leftmost].y):
-                leftmost = i
+def findPMax(PointsList, minAbs, maxAbs):
+    currentDistance = 0
+    maxDistance = 0
+    index = 0
+    for i in range(len(PointsList)):
+        currentDistance = distance(minAbs, maxAbs, PointsList[i])
+        if currentDistance > maxDistance:
+            maxDistance = currentDistance
+            index = i
+    return PointsList[index]
 
 
-    # proses pencarian convex hull
-    leftUpperIdx = 0;
-    rightUpperIdx = 0;
+def divideLeft(PointsList, minAbs, maxAbs):
+    temp = []
+    if len(PointsList) == 0: #basis apabila list kosong
+        return []
+    else:
+        pMax = findPMax(PointsList, minAbs, maxAbs)
+        temp.append(pMax)
+        temp1 = divideLeft(divideList(PointsList, minAbs, pMax, 1), minAbs, pMax)
+        if (len(temp1) > 0):
+            for x in temp1:
+                temp.append(x)
+        temp2 = divideLeft(divideList(PointsList, pMax, maxAbs, 1), pMax, maxAbs)
+        if (len(temp1) > 0):
+            for x in temp2:
+                temp.append(x)
+        return temp
     
-    for i in range(len(leftPoints)):
-        if orientationOf(rightPoints[leftmost], leftPoints[rightmost], leftPoints[i]) == "COUNTERCLOCKWISE":
-            leftUpperIdx = i
-            break
-    for i in range(len(rightPoints)):
-        if orientationOf(leftPoints[rightmost], rightPoints[leftmost], rightPoints[i]) == "CLOCKWISE":
-            rightUpperIdx = i
-            break
-    
-    leftLowerIdx = 0;
-    rightLowerIdx = 0;
-    
-    for i in range(len(rightPoints)):
-        if orientationOf(leftPoints[rightmost], rightPoints[leftmost], rightPoints[i]) == "COUNTERCLOCKWISE":
-            rightLowerIdx = i
-            break
-    for i in range(len(leftPoints)):
-        if orientationOf(rightPoints[leftmost], leftPoints[rightmost], leftPoints[i]) == "CLOCKWISE":
-            leftLowerIdx = i
-            break
-    
-    # proses penggabungan list
-    mergedPoints = []
-    
-    mergedPoints.append(leftPoints[leftUpperIdx])
-    while (leftUpperIdx != leftLowerIdx):
-        leftUpperIdx = (leftUpperIdx + 1) % len(leftPoints)
-        mergedPoints.append(leftPoints[leftUpperIdx])
+def divideRight(PointsList, minAbs, maxAbs):
+    temp = []
+    if len(PointsList) == 0: #basis apabila list kosong
+        return []
+    else:
+        pMax = findPMax(PointsList, minAbs, maxAbs)
+        temp.append(pMax)
+        temp1 = divideRight(divideList(PointsList, minAbs, pMax, -1), minAbs, pMax)
+        if (len(temp1) > 0):
+            for x in temp1:
+                temp.append(x)
+        temp2 = divideRight(divideList(PointsList, pMax, maxAbs, -1), pMax, maxAbs)
+        if (len(temp1) > 0):
+            for x in temp2:
+                temp.append(x)
+        return temp
 
-    mergedPoints.append(rightPoints[rightLowerIdx])
-    while (rightLowerIdx != rightUpperIdx):
-        rightLowerIdx = (rightLowerIdx + 1) % len(rightPoints)
-        mergedPoints.append(rightPoints[rightLowerIdx])
-        
-        
-    return mergedPoints
-        
-        
-def bruteHull(PointsList):
-    length = len(PointsList)
-    if length < 3:
-        return PointsList
-    
-    hull = []
-    leftmost = 0;
-    for i in range(1, length):
-        if (PointsList[i].x < PointsList[leftmost].x):
-            leftmost = i
-        elif (PointsList[i].x == PointsList[leftmost].x):
-            if (PointsList[i].y > PointsList[leftmost].y):
-                leftmost = i
-    
-    temp = leftmost
-    idx = 0
-    while (True):
-        hull.append(temp)
-        # cari index yang membuat orientasi counterclockwise
-        idx = (temp + 1) % length
-        for i in range(length):
-            if orientationOf(PointsList[temp], PointsList[i], PointsList[idx]) == "COUNTERCLOCKWISE":
-                idx = i
-                
-        temp = idx
-        if (temp == leftmost):
-            break
-    
-    hullList = []
-    for i in range(len(hull)):
-        hullList.append(PointsList[hull[i]])
-    return hullList
-        
-    
-    
-# fungsi yang akan dipanggil di utama
+# fungsi yang akan dipanggil di main
 # menerima list of points dan mengembalikan list of convex hull
 def ConvexHull(listOfPoints):
+    mergedList = []
     PointsList = []
     
     # membuat list yang berisi objectPoint
@@ -158,10 +105,24 @@ def ConvexHull(listOfPoints):
         for j in range(len(PointsList) - i - 1):
             if (PointsList[j].x > PointsList[j + 1].x):
                 PointsList[j], PointsList[j + 1] = PointsList[j + 1], PointsList[j]
-    # memasukkan list tersebut ke dalam fungsi divideList
     
-    mergedList = divideList(PointsList)
-    return mergedList
+    # mencari nilai absis minimum dan maksimum untuk
+    # mendapatkan garis yang membagi points menjadi 2 bagian
+    minAbs = findMinAbs(PointsList)
+    maxAbs = findMaxAbs(PointsList)
+    mergedList.append(minAbs)
+    mergedList.append(maxAbs)
+    leftSide, rightSide = divideList(PointsList, minAbs, maxAbs, 0)
+    leftRes = divideLeft(leftSide, minAbs, maxAbs)
+    rightRes = divideRight(rightSide, minAbs, maxAbs)
     
-
-     
+    for x in leftRes:
+        mergedList.append(x)
+    for x in rightRes:
+        mergedList.append(x)
+    mergedX = []
+    mergedY = []
+    for i in range(len(mergedList)):
+        mergedX.append(float(mergedList[i].x))
+        mergedY.append(float(mergedList[i].y))
+    return [mergedX, mergedY]
