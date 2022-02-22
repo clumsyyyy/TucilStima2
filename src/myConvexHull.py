@@ -72,7 +72,8 @@ def divideList(PointsList, minAbs, maxAbs, flag):
     leftSide = []
     rightSide = []
     for i in range(len(PointsList)):
-        if (PointsList[i].x > minAbs.x and PointsList[i].x < maxAbs.x):
+        if (((PointsList[i].x > minAbs.x) or (PointsList[i].x == minAbs.x and PointsList[i].y < minAbs.y))  
+            and ((PointsList[i].x < maxAbs.x) or (PointsList[i].x == maxAbs.x and PointsList[i].y < maxAbs.y))):
             if (isDeterminantPositive(minAbs, maxAbs, PointsList[i])):
                 leftSide.append(PointsList[i])
             if (not isDeterminantPositive(minAbs, maxAbs, PointsList[i])):
@@ -84,7 +85,6 @@ def divideList(PointsList, minAbs, maxAbs, flag):
         return rightSide
     else:
         return leftSide, rightSide
-
 
 
 
@@ -159,16 +159,15 @@ def mergeList(leftRes, rightRes, minAbs, maxAbs):
                 rightRes[j], rightRes[j + 1] = rightRes[j + 1], rightRes[j]
                 
     mergedList.append(minAbs)
-    print("minAbs: ", minAbs.x, minAbs.y)
+    # print("minAbs: ", minAbs.x, minAbs.y)
     for i in range(len(leftRes)):
-    # for i in range(len(leftRes)):
-        print("leftRes {}".format(i), leftRes[i].x, leftRes[i].y)
+        # print("leftRes {}".format(i), leftRes[i].x, leftRes[i].y)
         mergedList.append(leftRes[i])
         
     mergedList.append(maxAbs)
-    print("maxAbs", maxAbs.x, maxAbs.y)
+    # print("maxAbs", maxAbs.x, maxAbs.y)
     for i in range(len(rightRes)):
-        print("rightRes {}".format(i), rightRes[i].x, rightRes[i].y)
+        # print("rightRes {}".format(i), rightRes[i].x, rightRes[i].y)
         mergedList.append(rightRes[i])
     
     mergedList.append(mergedList[0])
