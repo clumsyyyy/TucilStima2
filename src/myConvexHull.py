@@ -1,36 +1,49 @@
 class Point:
+    '''
+    Class Point untuk merepresentasikan sebuah titik 
+    dalam bidang dua-dimensi.
+    '''
     def __init__(self, x, y):
         self.x = x
         self.y = y
 
-def determinant(p1, p2, p3):
-    return ((p1.x * p2.y) + (p3.x * p1.y) + (p2.x * p3.y) 
+def isDeterminantPositive(p1, p2, p3):
+    '''
+    Menghitung determinan antara dua buah titik (p1 dan p2)
+    yang membentuk sebuah garis dan titik p3 untuk menentukan 
+    letak sebuah titik relatif terhadap garis.
+    - Determinan positif: titik berada pada sisi kiri relatif dari garis
+    - Determinan negatif: titik berada pada sisi kanan relatif dari garis
+    - Determinan nol: titik berada pada garis dan dapat diabaikan
+    Argumen fungsi:
+        - p1, p2: titik yang membentuk garis (absis minimum dan maksimum)
+        - p3: titik yang dibandingkan
+    '''
+    det = ((p1.x * p2.y) + (p3.x * p1.y) + (p2.x * p3.y) 
             - (p3.x * p2.y) - (p1.x * p3.y) - (p2.x * p1.y))
+    if (det > 0):
+        return True
+    if (det < 0):
+        return False
     
 def distance(p1, p2, p3):
+    '''
+    Menghitung jarak antara garis yang dibentuk p1 dan p2
+    dengan titik p3.
+    Argumen fungsi:
+        p1, p2: titik yang membentuk garis (absis minimum dan maksimum)
+        p3: titik yang dibandingkan
+    '''
     return abs((p3.y - p1.y) * (p2.x - p1.x) - (p2.y - p1.y) * (p3.x - p1.x))
     
-# fungsi untuk membagi list menjadi dua list sesuai dengan posisi determinan dan garis
-# return dua buah list
-def divideList(PointsList, minAbs, maxAbs, flag):
-    leftSide = []
-    rightSide = []
-    for i in range(len(PointsList)):
-        if (PointsList[i].x > minAbs.x and PointsList[i].x < maxAbs.x):
-            if (determinant(minAbs, maxAbs, PointsList[i]) > 0):
-                leftSide.append(PointsList[i])
-            if (determinant(minAbs, maxAbs, PointsList[i]) < 0):
-                rightSide.append(PointsList[i])
-
-    # titik antara garis tidak bisa untuk membuat convex hull, abaikan
-    if (flag > 0):
-        return leftSide
-    elif (flag < 0):
-        return rightSide
-    else:
-        return leftSide, rightSide
-
 def findPMax(PointsList, minAbs, maxAbs):
+    '''
+    Fungsi untuk menentukan pMax, titik berjarak terjauh dari garis
+    yang dibentuk minAbs dan maxAbs.
+    Argumen fungsi:
+        - PointsList: list of points yang akan dibagi
+        - minAbs, maxAbs: titik dengan absis minimum/maksimum
+    '''
     currentDistance = 0
     maxDistance = 0
     index = 0
@@ -42,9 +55,50 @@ def findPMax(PointsList, minAbs, maxAbs):
     return PointsList[index]
 
 
+def divideList(PointsList, minAbs, maxAbs, flag):
+    '''
+    FUNGSI DIVIDE:
+    Membagi list of points menjadi dua bagian berdasarkan determinan
+    relatif terhadap garis yang dibentuk titik absis minimum dan maksimum.
+    Titik yang mempunyai determinan positif terhadap garis dimasukkan ke
+    list leftSide, sementara titik dengan determinan negatif dimasukkan ke
+    list rightSide.
+    Argumen fungsi:
+        - PointsList: list of points yang akan dibagi
+        - minAbs, maxAbs: titik dengan absis minimum/maksimum
+        - flag: integer untuk menentukan list mana yang akan dikembalikan
+        (beberapa kasus membutuhkan hanya list kiri / kanan)
+    '''
+    leftSide = []
+    rightSide = []
+    for i in range(len(PointsList)):
+        if (PointsList[i].x > minAbs.x and PointsList[i].x < maxAbs.x):
+            if (isDeterminantPositive(minAbs, maxAbs, PointsList[i])):
+                leftSide.append(PointsList[i])
+            if (not isDeterminantPositive(minAbs, maxAbs, PointsList[i])):
+                rightSide.append(PointsList[i])
+
+    if (flag > 0):
+        return leftSide
+    elif (flag < 0):
+        return rightSide
+    else:
+        return leftSide, rightSide
+
+
+
+
 def divideLeft(PointsList, minAbs, maxAbs):
+    '''
+    Membagi list of points menjadi dua bagian berdasarkan determinan
+    untuk bagian kiri dari garis awal. Fungsi ini akan melakukan
+    pembagian secara rekursif sampai list kosong.
+    Argumen fungsi:
+        - PointsList: list of points yang akan dibagi
+        - minAbs, maxAbs: titik dengan absis minimum/maksimum
+    '''
     temp = []
-    if len(PointsList) == 0: #basis apabila list kosong
+    if len(PointsList) == 0: 
         return []
     else:
         pMax = findPMax(PointsList, minAbs, maxAbs)
@@ -54,12 +108,20 @@ def divideLeft(PointsList, minAbs, maxAbs):
             for x in temp1:
                 temp.append(x)
         temp2 = divideLeft(divideList(PointsList, pMax, maxAbs, 1), pMax, maxAbs)
-        if (len(temp1) > 0):
+        if (len(temp2) > 0):
             for x in temp2:
                 temp.append(x)
         return temp
     
 def divideRight(PointsList, minAbs, maxAbs):
+    '''
+    Membagi list of points menjadi dua bagian berdasarkan determinan
+    untuk bagian kanan dari garis awal. Fungsi ini akan melakukan
+    pembagian secara rekursif sampai list kosong.
+    Argumen fungsi:
+        - PointsList: list of points yang akan dibagi
+        - minAbs, maxAbs: titik dengan absis minimum/maksimum
+    '''
     temp = []
     if len(PointsList) == 0: #basis apabila list kosong
         return []
@@ -71,15 +133,60 @@ def divideRight(PointsList, minAbs, maxAbs):
             for x in temp1:
                 temp.append(x)
         temp2 = divideRight(divideList(PointsList, pMax, maxAbs, -1), pMax, maxAbs)
-        if (len(temp1) > 0):
+        if (len(temp2) > 0):
             for x in temp2:
                 temp.append(x)
         return temp
 
-# fungsi yang akan dipanggil di main
-# menerima list of points dan mengembalikan list of convex hull
-def ConvexHull(listOfPoints):
+def mergeList(leftRes, rightRes, minAbs, maxAbs):
+    '''
+    Menggabungkan titik yang berada di dalam list leftRes dan rightRes
+    (hasil divide and conquer) dengan titik absis minimum/maksimum.
+    Argumen fungsi:
+        - leftRes, rightRes: hasil dari divideLeft dan divideRight
+        - minAbs, maxAbs: titik dengan absis minimum/maksimum
+    '''
     mergedList = []
+    # sort leftRes ascending, sort rightRes descending
+    for i in range(len(leftRes) - 1):
+        for j in range(len(leftRes) - i - 1):
+            if (leftRes[j].x > leftRes[j + 1].x):
+                leftRes[j], leftRes[j + 1] = leftRes[j + 1], leftRes[j]
+                
+    for i in range(len(rightRes) - 1):
+        for j in range(len(rightRes) - i - 1):
+            if (rightRes[j].x < rightRes[j + 1].x):
+                rightRes[j], rightRes[j + 1] = rightRes[j + 1], rightRes[j]
+                
+    mergedList.append(minAbs)
+    print("minAbs: ", minAbs.x, minAbs.y)
+    for i in range(len(leftRes)):
+    # for i in range(len(leftRes)):
+        print("leftRes {}".format(i), leftRes[i].x, leftRes[i].y)
+        mergedList.append(leftRes[i])
+        
+    mergedList.append(maxAbs)
+    print("maxAbs", maxAbs.x, maxAbs.y)
+    for i in range(len(rightRes)):
+        print("rightRes {}".format(i), rightRes[i].x, rightRes[i].y)
+        mergedList.append(rightRes[i])
+    
+    mergedList.append(mergedList[0])
+
+    mergedX = []
+    mergedY = []
+    
+    for i in range(len(mergedList)):
+        mergedX.append(float(mergedList[i].x))
+        mergedY.append(float(mergedList[i].y))
+    return [mergedX, mergedY]
+
+
+def ConvexHull(listOfPoints):
+    '''
+    Fungsi utama (saat pemanggilan)
+    Menerima dataset dalam bentuk list dua dimensi (x, y)
+    '''
     PointsList = []
     
     # membuat list yang berisi objectPoint
@@ -101,38 +208,4 @@ def ConvexHull(listOfPoints):
     leftSide, rightSide = divideList(PointsList, minAbs, maxAbs, 0)
     leftRes = divideLeft(leftSide, minAbs, maxAbs)
     rightRes = divideRight(rightSide, minAbs, maxAbs)
-    
-    # sort leftRes ascending, sort rightRes descending
-    for i in range(len(leftRes) - 1):
-        for j in range(len(leftRes) - i - 1):
-            if (leftRes[j].x > leftRes[j + 1].x):
-                leftRes[j], leftRes[j + 1] = leftRes[j + 1], leftRes[j]
-                
-    for i in range(len(rightRes) - 1):
-        for j in range(len(rightRes) - i - 1):
-            if (rightRes[j].x < rightRes[j + 1].x):
-                rightRes[j], rightRes[j + 1] = rightRes[j + 1], rightRes[j]
-                
-    mergedList.append(minAbs)
-    print("minAbs: ", minAbs.x, minAbs.y)
-    for i in range(len(leftRes)):
-    # for i in range(len(leftRes)):
-        print("leftRes{}".format(i), leftRes[i].x, leftRes[i].y)
-        mergedList.append(leftRes[i])
-        
-    mergedList.append(maxAbs)
-    print("maxAbs", maxAbs.x, maxAbs.y)
-    for i in range(len(rightRes)):
-        
-        print("rightRes{}".format(i), rightRes[i].x, rightRes[i].y)
-        mergedList.append(rightRes[i])
-    
-    mergedList.append(mergedList[0])
-
-    mergedX = []
-    mergedY = []
-    
-    for i in range(len(mergedList)):
-        mergedX.append(float(mergedList[i].x))
-        mergedY.append(float(mergedList[i].y))
-    return [mergedX, mergedY]
+    return mergeList(leftRes, rightRes, minAbs, maxAbs)
