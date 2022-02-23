@@ -1,0 +1,4 @@
+build/
+dist/
+venv/
+myConvexHull.egg-info/
