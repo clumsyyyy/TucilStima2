@@ -1,5 +1,5 @@
 
-
+#%%
 import matplotlib.pyplot as plt
 from scipy.spatial import ConvexHull
 from sklearn import datasets
@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 
 plt.figure(figsize = (10, 6))
-colors = ['r', 'g', 'b']
+colors = ['b', 'r', 'g']
 
 plt.title('Petal Width vs Petal Length')
 
@@ -27,7 +27,10 @@ for i in range(len(data.target_names)):
     hull = ConvexHull(bucket)
     for simplex in hull.simplices:
         print(simplex)
+        plt.scatter(bucket[:, 0], bucket[:, 1], label=data.target_names[i])
         plt.plot(bucket[simplex, 0], bucket[simplex, 1], colors[i])
     print(" ")
 
 # plt.scatter(bucket[:, 0], bucket[:, 1], label = data.target_names[i])
+
+# %%
