@@ -1,63 +1,5 @@
-class Point:
-    '''
-    Class Point untuk merepresentasikan sebuah titik 
-    dalam bidang dua-dimensi.
-    '''
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-def isDeterminantPositive(p1, p2, p3):
-    '''
-    Menghitung determinan antara dua buah titik (p1 dan p2)
-    yang membentuk sebuah garis dan titik p3 untuk menentukan 
-    letak sebuah titik relatif terhadap garis.
-    - Determinan positif: titik berada pada sisi kiri relatif dari garis
-    - Determinan negatif: titik berada pada sisi kanan relatif dari garis
-    - Determinan nol: titik berada pada garis dan dapat diabaikan
-    Argumen fungsi:
-        - p1, p2: titik yang membentuk garis (absis minimum dan maksimum)
-        - p3: titik yang dibandingkan
-    '''
-    det = ((p1.x * p2.y) + (p3.x * p1.y) + (p2.x * p3.y) 
-            - (p3.x * p2.y) - (p1.x * p3.y) - (p2.x * p1.y))
-    if (det > 0):
-        return True
-    if (det < 0):
-        return False
-    
-def distance(p1, p2, p3):
-    '''
-    Menghitung jarak antara garis yang dibentuk p1 dan p2
-    dengan titik p3.
-    Argumen fungsi:
-        p1, p2: titik yang membentuk garis (absis minimum dan maksimum)
-        p3: titik yang dibandingkan
-    '''
-    A = p1.y - p2.y
-    B = p2.x - p1.x
-    C = p1.x * p2.y - p2.x * p1.y
-    dist = abs((A * p3.x + B * p3.y + C) / ((A ** 2 + B ** 2) ** 0.5))
-    return dist
-    # return abs((p3.y - p1.y) * (p2.x - p1.x) - (p2.y - p1.y) * (p3.x - p1.x))
-    
-def findPMax(PointsList, minAbs, maxAbs):
-    '''
-    Fungsi untuk menentukan pMax, titik berjarak terjauh dari garis
-    yang dibentuk minAbs dan maxAbs.
-    Argumen fungsi:
-        - PointsList: list of points yang akan dibagi
-        - minAbs, maxAbs: titik dengan absis minimum/maksimum
-    '''
-    currentDistance = 0
-    maxDistance = 0
-    index = 0
-    for i in range(len(PointsList)):
-        currentDistance = distance(minAbs, maxAbs, PointsList[i])
-        if currentDistance > maxDistance:
-            maxDistance = currentDistance
-            index = i
-    return PointsList[index]
+import math
+import myConvexHull.utils as ut
 
 class Convex(object):
     def __init__(self):
@@ -82,9 +24,9 @@ class Convex(object):
         for i in range(len(PointsList)):
             if (((PointsList[i].x > minAbs.x) or (PointsList[i].x == minAbs.x and PointsList[i].y < minAbs.y))  
                 and ((PointsList[i].x < maxAbs.x) or (PointsList[i].x == maxAbs.x and PointsList[i].y < maxAbs.y))):
-                if (isDeterminantPositive(minAbs, maxAbs, PointsList[i])):
+                if (ut.isDeterminantPositive(minAbs, maxAbs, PointsList[i])):
                     leftSide.append(PointsList[i])
-                if (not isDeterminantPositive(minAbs, maxAbs, PointsList[i])):
+                if (not ut.isDeterminantPositive(minAbs, maxAbs, PointsList[i])):
                     rightSide.append(PointsList[i])
 
         if (flag > 0):
@@ -109,15 +51,18 @@ class Convex(object):
         if len(PointsList) == 0: 
             return []
         else:
-            pMax = findPMax(PointsList, minAbs, maxAbs)
+            pMax = ut.findPMax(PointsList, minAbs, maxAbs)
+            PointsList.remove(pMax)
             temp.append(pMax)
             temp1 = self.divideLeft(self.divideList(PointsList, minAbs, pMax, 1), minAbs, pMax)
             if (len(temp1) > 0):
                 for x in temp1:
+                    PointsList.remove(x)
                     temp.append(x)
             temp2 = self.divideLeft(self.divideList(PointsList, pMax, maxAbs, 1), pMax, maxAbs)
             if (len(temp2) > 0):
                 for x in temp2:
+                    PointsList.remove(x)
                     temp.append(x)
             return temp
         
@@ -134,15 +79,18 @@ class Convex(object):
         if len(PointsList) == 0: #basis apabila list kosong
             return []
         else:
-            pMax = findPMax(PointsList, minAbs, maxAbs)
+            pMax = ut.findPMax(PointsList, minAbs, maxAbs)
+            PointsList.remove(pMax)
             temp.append(pMax)
             temp1 = self.divideRight(self.divideList(PointsList, minAbs, pMax, -1), minAbs, pMax)
             if (len(temp1) > 0):
                 for x in temp1:
+                    PointsList.remove(x)
                     temp.append(x)
             temp2 = self.divideRight(self.divideList(PointsList, pMax, maxAbs, -1), pMax, maxAbs)
             if (len(temp2) > 0):
                 for x in temp2:
+                    PointsList.remove(x)
                     temp.append(x)
             return temp
 
@@ -198,7 +146,7 @@ class Convex(object):
         
         # membuat list yang berisi objectPoint
         for i in range(len(listOfPoints)):
-            PointsList.append(Point(listOfPoints[i][0], listOfPoints[i][1]))
+            PointsList.append(ut.Point(listOfPoints[i][0], listOfPoints[i][1]))
         
         # bubble sort berdasarkan koordinat x
         for i in range(len(PointsList) - 1):
@@ -210,9 +158,10 @@ class Convex(object):
         # mendapatkan garis yang membagi points menjadi 2 bagian
         minAbs = PointsList[0]
         maxAbs = PointsList[len(PointsList) - 1]
-        
+        PointsList.remove(minAbs)
+        PointsList.remove(maxAbs)        
 
-        leftSide, rightSide = self.divideList(PointsList[1:-2], minAbs, maxAbs, 0)
+        leftSide, rightSide = self.divideList(PointsList, minAbs, maxAbs, 0)
         leftRes = self.divideLeft(leftSide, minAbs, maxAbs)
         rightRes = self.divideRight(rightSide, minAbs, maxAbs)
         return self.mergeList(leftRes, rightRes, minAbs, maxAbs)
