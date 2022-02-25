@@ -1,10 +1,7 @@
 
 import myConvexHull.utils as ut
 
-class Convex(object):
-    def __init__(self):
-        self.PointsList = []
-        
+class Convex(object):        
     def divideList(self, PointsList, minAbs, maxAbs, flag):
         '''
         FUNGSI DIVIDE:
@@ -96,6 +93,7 @@ class Convex(object):
 
     def mergeList(self, leftRes, rightRes, minAbs, maxAbs):
         '''
+        FUNGSI MERGE
         Menggabungkan titik yang berada di dalam list leftRes dan rightRes
         (hasil divide and conquer) dengan titik absis minimum/maksimum.
         Argumen fungsi:
