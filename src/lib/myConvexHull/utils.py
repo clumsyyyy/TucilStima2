@@ -36,13 +36,19 @@ def distance(p1, p2, p3):
         p1, p2: titik yang membentuk garis (absis minimum dan maksimum)
         p3: titik yang dibandingkan
     '''
-    A = p1.y - p2.y
-    B = p2.x - p1.x
-    C = p1.x * p2.y - p2.x * p1.y
+    A = p2.y - p1.y
+    B = p1.x - p2.x
+    C = -p1.x * p2.y + p2.x * p1.y
     dist = abs((A * p3.x + B * p3.y + C) / ((A ** 2 + B ** 2) ** 0.5))
     return dist
 
 def findAngle(minAbs, maxAbs, pMax):
+    '''
+    Mencari sudut dari dari sudut yang dibentuk titik pMax, minAbs
+    dan maxAbs menggunakan aturan cosinus
+    Argumen fungsi:
+        minAbs, maxAbs, pMax: titik-titik sebagai parameter
+    '''
     aSide = (pMax.x - maxAbs.x) ** 2 + (pMax.y - maxAbs.y) ** 2
     bSide = (pMax.x - minAbs.x) ** 2 + (pMax.y - minAbs.y) ** 2
     cSide = (maxAbs.x - minAbs.x) ** 2 + (maxAbs.y - minAbs.y) ** 2

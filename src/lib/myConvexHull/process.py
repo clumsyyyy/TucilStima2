@@ -1,4 +1,4 @@
-import math
+
 import myConvexHull.utils as ut
 
 class Convex(object):
@@ -54,16 +54,16 @@ class Convex(object):
             pMax = ut.findPMax(PointsList, minAbs, maxAbs)
             PointsList.remove(pMax)
             temp.append(pMax)
-            temp1 = self.divideLeft(self.divideList(PointsList, minAbs, pMax, 1), minAbs, pMax)
-            if (len(temp1) > 0):
-                for x in temp1:
-                    PointsList.remove(x)
-                    temp.append(x)
-            temp2 = self.divideLeft(self.divideList(PointsList, pMax, maxAbs, 1), pMax, maxAbs)
-            if (len(temp2) > 0):
-                for x in temp2:
-                    PointsList.remove(x)
-                    temp.append(x)
+            leftTemp = self.divideLeft(self.divideList(PointsList, minAbs, pMax, 1), minAbs, pMax)
+            if (len(leftTemp) > 0):
+                for point in leftTemp:
+                    PointsList.remove(point)
+                    temp.append(point)
+            rightTemp = self.divideLeft(self.divideList(PointsList, pMax, maxAbs, 1), pMax, maxAbs)
+            if (len(rightTemp) > 0):
+                for point in rightTemp:
+                    PointsList.remove(point)
+                    temp.append(point)
             return temp
         
     def divideRight(self, PointsList, minAbs, maxAbs):
@@ -82,16 +82,16 @@ class Convex(object):
             pMax = ut.findPMax(PointsList, minAbs, maxAbs)
             PointsList.remove(pMax)
             temp.append(pMax)
-            temp1 = self.divideRight(self.divideList(PointsList, minAbs, pMax, -1), minAbs, pMax)
-            if (len(temp1) > 0):
-                for x in temp1:
-                    PointsList.remove(x)
-                    temp.append(x)
-            temp2 = self.divideRight(self.divideList(PointsList, pMax, maxAbs, -1), pMax, maxAbs)
-            if (len(temp2) > 0):
-                for x in temp2:
-                    PointsList.remove(x)
-                    temp.append(x)
+            leftTemp = self.divideRight(self.divideList(PointsList, minAbs, pMax, -1), minAbs, pMax)
+            if (len(leftTemp) > 0):
+                for point in leftTemp:
+                    PointsList.remove(point)
+                    temp.append(point)
+            rightTemp = self.divideRight(self.divideList(PointsList, pMax, maxAbs, -1), pMax, maxAbs)
+            if (len(rightTemp) > 0):
+                for point in rightTemp:
+                    PointsList.remove(point)
+                    temp.append(point)
             return temp
 
     def mergeList(self, leftRes, rightRes, minAbs, maxAbs):
@@ -115,15 +115,11 @@ class Convex(object):
                     rightRes[j], rightRes[j + 1] = rightRes[j + 1], rightRes[j]
                     
         mergedList.append(minAbs)
-        # print("minAbs: ", minAbs.x, minAbs.y)
         for i in range(len(leftRes)):
-            # print("leftRes {}".format(i), leftRes[i].x, leftRes[i].y)
             mergedList.append(leftRes[i])
             
         mergedList.append(maxAbs)
-        # print("maxAbs", maxAbs.x, maxAbs.y)
         for i in range(len(rightRes)):
-            # print("rightRes {}".format(i), rightRes[i].x, rightRes[i].y)
             mergedList.append(rightRes[i])
         
         mergedList.append(mergedList[0])
@@ -165,3 +161,4 @@ class Convex(object):
         leftRes = self.divideLeft(leftSide, minAbs, maxAbs)
         rightRes = self.divideRight(rightSide, minAbs, maxAbs)
         return self.mergeList(leftRes, rightRes, minAbs, maxAbs)
+    
