@@ -79,7 +79,9 @@ Fungsi `ConvexHull()` mengembalikan dua list, satu list berupa daftar absis dari
 ```py
 python -u main.py
 ```
+
 Untuk _PyCharm_, dapat dilakukan klik kanan > `Run`
+
 3. Masukkan input sesuai instruksi, 
     - Masukkan integer untuk menentukan dataset yang akan dipakai (iris, wine, breast_cancer, atau digits
     -   Masukkan integer kolom untuk menentukan kolom yang akan diambil
