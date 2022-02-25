@@ -1,22 +1,21 @@
-#%% 
 import matplotlib.pyplot as plt
-from sklearn import datasets
 import pandas as pd
 import random
+import time
+from sklearn import datasets
 from myConvexHull.process import Convex
 from scipy.spatial import ConvexHull
 
-
-option = 1
-while (option != 0):
-    print("\n\nChoose your dataset: ")
+while True:
+    print("\n")
+    print("Choose your dataset: ")
     print("1. Iris dataset")
     print("2. Wine dataset")
     print("3. Digits dataset")
     print("4. Breast cancer dataset")
-    print("0. Exit")
-    option = int(input("Input your option >>> "))
-    
+
+
+    option = int(input("Input your option (0 to exit)\n>>> "))
     while (option not in range(0, 5)):
         print("Invalid input! Try again.\n")
         option = int(input("Input your option >>> "))
@@ -30,24 +29,31 @@ while (option != 0):
     elif option == 4:
         data = datasets.load_breast_cancer()
     elif option == 0:
-        print("Exiting program...")
+        print("Exiting program...\n")
         break
-    print(" ")
     df = pd.DataFrame(data.data, columns = data.feature_names)
     df['Target'] = pd.DataFrame(data.target)
-    print("Available columns:")
+
+    time.sleep(0.1)
+    print("\nAvailable columns:")
     for i in range(len(df.columns) - 1):
         print("{}. {}".format(i, df.columns[i]))
-    
-    print("\nInput your column (max:{}): ".format(len(df.columns)))
+
+
     print("Note: the y-column taken would be the column right next to the inputted column!")
-    cols = int(input("Input your column (max: {}):".format(len(df.columns))))
+
+    time.sleep(0.1)
+    cols = int(input("Input your column (max: {}): ".format(len(df.columns))))
     while (cols + 1 >= len(df.columns) - 1):
+        time.sleep(0.1)
         print("Invalid input! Try again.\n")
-        cols = int(input("Input your column (max: {}):".format(len(df.columns))))
+        cols = int(input("Input your column (max: {}): ".format(len(df.columns))))
         
     title = data.feature_names[cols] + " vs " + data.feature_names[cols + 1]
-    
+    print("Generating convex hull for {}...".format(title))
+
+
+
     # Penggunaan library myConvexHull
     plt.figure(figsize = (10, 6))
     plt.title(title + ' (myConvexHull)')
@@ -71,6 +77,9 @@ while (option != 0):
     plt.legend()
     plt.show()
 
+
+
+
     # Perbandingan menggunakan library SciPy
     plt.figure(figsize = (10, 6))
     plt.title(title + ' (SciPy)')
@@ -85,12 +94,10 @@ while (option != 0):
         if (i >= len(scolors)):
             tempColor = random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1)
         else:
-            tempColor = scolors[len(scolors) - 1 - i]
+            tempColor = scolors[i]
             
         plt.scatter(bucket[:, 0], bucket[:, 1], label=data.target_names[i], color = tempColor)
         for simplex in hull.simplices:
             plt.plot(bucket[simplex, 0], bucket[simplex, 1], color = tempColor)
     plt.legend()
     plt.show()
-
-# %%

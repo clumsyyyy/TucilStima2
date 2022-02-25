@@ -1,5 +1,4 @@
-
-import myConvexHull.utils as ut
+from myConvexHull.utils import *
 
 class Convex(object):        
     def divideList(self, PointsList, minAbs, maxAbs, flag):
@@ -19,11 +18,11 @@ class Convex(object):
         leftSide = []
         rightSide = []
         for i in range(len(PointsList)):
-            if (((PointsList[i].x > minAbs.x) or (PointsList[i].x == minAbs.x and PointsList[i].y < minAbs.y))  
+            if (((PointsList[i].x > minAbs.x) or (PointsList[i].x == minAbs.x and PointsList[i].y > minAbs.y))  
                 and ((PointsList[i].x < maxAbs.x) or (PointsList[i].x == maxAbs.x and PointsList[i].y < maxAbs.y))):
-                if (ut.isDeterminantPositive(minAbs, maxAbs, PointsList[i])):
+                if (isDeterminantPositive(minAbs, maxAbs, PointsList[i])):
                     leftSide.append(PointsList[i])
-                if (not ut.isDeterminantPositive(minAbs, maxAbs, PointsList[i])):
+                if (not isDeterminantPositive(minAbs, maxAbs, PointsList[i])):
                     rightSide.append(PointsList[i])
 
         if (flag > 0):
@@ -48,7 +47,7 @@ class Convex(object):
         if len(PointsList) == 0: 
             return []
         else:
-            pMax = ut.findPMax(PointsList, minAbs, maxAbs)
+            pMax = findPMax(PointsList, minAbs, maxAbs)
             PointsList.remove(pMax)
             temp.append(pMax)
             leftTemp = self.divideLeft(self.divideList(PointsList, minAbs, pMax, 1), minAbs, pMax)
@@ -76,7 +75,7 @@ class Convex(object):
         if len(PointsList) == 0: #basis apabila list kosong
             return []
         else:
-            pMax = ut.findPMax(PointsList, minAbs, maxAbs)
+            pMax = findPMax(PointsList, minAbs, maxAbs)
             PointsList.remove(pMax)
             temp.append(pMax)
             leftTemp = self.divideRight(self.divideList(PointsList, minAbs, pMax, -1), minAbs, pMax)
@@ -104,20 +103,26 @@ class Convex(object):
         # sort leftRes ascending, sort rightRes descending
         for i in range(len(leftRes) - 1):
             for j in range(len(leftRes) - i - 1):
-                if (leftRes[j].x > leftRes[j + 1].x):
+                if (leftRes[j].x > leftRes[j + 1].x or (leftRes[j].x == leftRes[j + 1].x
+                    and leftRes[j].y > leftRes[j + 1].y)):
                     leftRes[j], leftRes[j + 1] = leftRes[j + 1], leftRes[j]
                     
         for i in range(len(rightRes) - 1):
             for j in range(len(rightRes) - i - 1):
-                if (rightRes[j].x < rightRes[j + 1].x):
+                if (rightRes[j].x < rightRes[j + 1].x or (rightRes[j].x == rightRes[j + 1].x
+                    and rightRes[j].y < rightRes[j + 1].y)):
                     rightRes[j], rightRes[j + 1] = rightRes[j + 1], rightRes[j]
                     
         mergedList.append(minAbs)
+        # print("minAbs", minAbs.x, minAbs.y)
         for i in range(len(leftRes)):
+            # print("leftRes", i, leftRes[i].x, leftRes[i].y)
             mergedList.append(leftRes[i])
             
         mergedList.append(maxAbs)
+        # print("maxAbs", maxAbs.x, maxAbs.y)
         for i in range(len(rightRes)):
+            # print("rightRes", i, rightRes[i].x, rightRes[i].y)
             mergedList.append(rightRes[i])
         
         mergedList.append(mergedList[0])
@@ -140,12 +145,13 @@ class Convex(object):
         
         # membuat list yang berisi objectPoint
         for i in range(len(listOfPoints)):
-            PointsList.append(ut.Point(listOfPoints[i][0], listOfPoints[i][1]))
+            PointsList.append(Point(listOfPoints[i][0], listOfPoints[i][1]))
         
         # bubble sort berdasarkan koordinat x
         for i in range(len(PointsList) - 1):
             for j in range(len(PointsList) - i - 1):
-                if (PointsList[j].x > PointsList[j + 1].x):
+                if (PointsList[j].x > PointsList[j + 1].x or (PointsList[j].x == PointsList[j + 1].x
+                    and PointsList[j].y > PointsList[j + 1].y)):
                     PointsList[j], PointsList[j + 1] = PointsList[j + 1], PointsList[j]
         
         # mencari nilai absis minimum dan maksimum untuk
@@ -159,4 +165,3 @@ class Convex(object):
         leftRes = self.divideLeft(leftSide, minAbs, maxAbs)
         rightRes = self.divideRight(rightSide, minAbs, maxAbs)
         return self.mergeList(leftRes, rightRes, minAbs, maxAbs)
-    
