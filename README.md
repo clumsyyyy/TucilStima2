@@ -21,7 +21,21 @@ Algoritma yang digunakan dalam pembuatan pustaka ini adalah algoritma _divide an
 5. Menggabungkan hasil proses rekursif kepada sebuah list, dan mengurutkan list tersebut sehingga terbentuk _convex hull_ yang dapat digambarkan dalam sebuah _scatter plot_
 
 ## Requirements
-**[RECOMMENDED]** Pengujian dilakukan pada Python 3.9.4 64-bit, namun pengujian pada Python 3.7 / Google Colaboratory dapat dilakukan.
+**[RECOMMENDED]**
+- Python 3.9.4 64-bit, namun pengujian pada Python 3.7 / Google Colaboratory dapat dilakukan.
+- Package Installer for Python (pip) 22.0.2
+- _Visual Studio Code / PyCharm Community Edition 2020.2_ sebagai IDE pengujian
+
+
+**[IMPORTANT]** Pada folder `src` terdapat file `main.py` dan `main.ipynb` untuk pengujian. 
+
+**Untuk menampilkan hasil _scatter plot_ dalam _Visual Studio Code_**, sangat direkomendasikan untuk melakukan instalasi _extension_ <a href = "https://marketplace.visualstudio.com/items?itemName=ms-toolsai.jupyter">Jupyter Notebook</a> dan <a href = "https://marketplace.visualstudio.com/items?itemName=donjayamanne.python-extension-pack">Python Extension Pack</a> dengan langkah-langkah seperti berikut:
+1. Pada _Visual Studio Code_, pilih opsi _Extensions_ pada bagian _sidebar_ kiri (bisa juga menggunakan _shortcut_ Ctrl + Shift + X)
+2. Ketikkan `Jupyter` pada kolom pencarian, lalu pada opsi teratas (Jupyter by Microsoft), klik Install.
+   > Lakukan langkah yang sama dengan Python Extension Pack dengan mengetikkan `Python Extension Pack` pada kolom pencarian
+3. Apabila instalasi berhasil dilakukan, saat membuka file `main.py`, akan ada pilihan `Run Cell` di atas komentar #%%. Klik pilihan tersebut untuk mengaktifkan _kernel_ dan menampilkan hasil _scatter plot_.
+4. Setelah _kernel_ berhasil diaktifkan, akan muncul dialog untuk melakukan input. Masukkan angka dataset yang diinginkan dan kolom yang diinginkan. Hasil _scatter plot_ akan muncul pada kernel.
+
 
 ## Kompilasi
 1. Pastikan berada di folder `lib` (`root/src/lib`)
@@ -29,12 +43,15 @@ Algoritma yang digunakan dalam pembuatan pustaka ini adalah algoritma _divide an
 ```pip install -e .```
 3. Tunggu hingga instalasi selesai, dan pustaka siap digunakan!
 
+
 ## Penggunaan
-1. Untuk meng-import fungsi `ConvexHull`, gunakan perintah:\
+
+### Penggunaan Pustaka secara Umum
+1. Untuk meng-import fungsi `ConvexHull`, gunakan perintah:
 ```py
 from myConvexHull.process import Convex
 ```
-2. Inisiasi _class_ Convex, misal:\
+2. Inisiasi _class_ Convex, misal:
 ```py
 ConvexObj = Convex()
 ```
@@ -60,6 +77,21 @@ for i in range(len(data.target_names)):
     plt.plot(hull[0], hull[1], color = colors[i % len(colors)])
 ```
 Fungsi `ConvexHull()` mengembalikan dua list, satu list berupa daftar absis dari point[i] dan ordinat dari point[i]. Dengan memasukkan list tersebut ke dalam `plt.plot`, sebuah _convex hull_ dapat digambarkan di _scatter plot_
+
+### Penggunaan File `main.py`
+#### _Visual Studio Code_ 
+1. Pastikan sudah menginstalasi _extensions_ yang dibutuhkan di poin [_requirements_](#requirements)
+2. Jalankan _kernel_ dengan mengklik `Run Cell` (file `main.py`) atau `Run All` (file `main.ipynb`), lalu akan muncul dialog pengisian. Apabila menggunakan _Visual Studio Code_, engisian dialog dapat dilakukan di kotak _input box_ yang akan muncul di bagian atas layar
+   - Masukkan integer untuk menentukan dataset yang akan dipakai (iris, wine, breast_cancer, atau digits
+   - Masukkan integer kolom untuk menentukan kolom yang akan diambil
+     [**IMPORTANT**] Karena fungsi akan mengambil dua buah kolom sebagai representasi x dan y, kolom untuk y merupakan **kolom yang berada persis di sebelah angka kolom x**
+3. Hasil _scatter plot_ akan muncul di layar!
+
+
+#### _Pycharm Community Edition_
+[**IMPORTANT**] File yang digunakan adalah `main.py`
+1. Klik kanan pada IDE, lalu klik opsi `Run`
+2. Dialog akan muncul di terminal, dan setelah pengisian dialog (sama dengan cara untuk Visual Studio Code), hasil _scatter plot_ akan muncul!
 
 ## Identitas
 13520124 - Owen Christian Wijaya
