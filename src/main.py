@@ -43,11 +43,11 @@ while True:
     print("Note: the y-column taken would be the column right next to the inputted column!")
 
     time.sleep(0.1)
-    cols = int(input("Input your column (max: {}): ".format(len(df.columns))))
+    cols = int(input("Input your column (max: {}): ".format(len(df.columns) - 3)))
     while (cols + 1 >= len(df.columns) - 1):
         time.sleep(0.1)
         print("Invalid input! Try again.\n")
-        cols = int(input("Input your column (max: {}): ".format(len(df.columns))))
+        cols = int(input("Input your column (max: {}): ".format(len(df.columns) - 3)))
         
     title = data.feature_names[cols] + " vs " + data.feature_names[cols + 1]
     print("Generating convex hull for {}...".format(title))
