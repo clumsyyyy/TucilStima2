@@ -53,7 +53,7 @@ def findAngle(minAbs, maxAbs, pMax):
     bSide = (pMax.x - minAbs.x) ** 2 + (pMax.y - minAbs.y) ** 2
     cSide = (maxAbs.x - minAbs.x) ** 2 + (maxAbs.y - minAbs.y) ** 2
     cos = (aSide - bSide - cSide) / (-2 * (bSide ** 0.5) * (cSide ** 0.5))
-    return math.acos(cos) * 180 / math.pi
+    return math.acos(round(cos, 10)) * 180 / math.pi
 
 
 def findPMax(PointsList, minAbs, maxAbs):

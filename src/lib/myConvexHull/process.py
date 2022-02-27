@@ -17,7 +17,7 @@ class Convex(object):
         '''
         leftSide = []
         rightSide = []
-        for i in range(len(PointsList)):
+        for i in range(len(PointsList)):    
             # kondisi untuk menambahkan titik adalah apabila:
             # - titik mempunyai nilai absis antara minAbs dan maxAbs
             # - titik mempunyai nilai absis sama dengan minAbs tapi ordinat lebih tinggi
@@ -31,6 +31,7 @@ class Convex(object):
                     leftSide.append(PointsList[i])
                 if (not isDeterminantPositive(minAbs, maxAbs, PointsList[i])):
                     rightSide.append(PointsList[i])
+                
 
         # flag menunjukkan list mana yang akan dikembalikan
         if (flag > 0):
