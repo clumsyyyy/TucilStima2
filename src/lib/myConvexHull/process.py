@@ -52,18 +52,17 @@ class Convex(object):
             - PointsList: list of points yang akan dibagi
             - minAbs, maxAbs: titik dengan absis minimum/maksimum
         '''
-        if len(PointsList) == 0:    #basis, list kosong
+        if len(PointsList) == 0: 
             return []
-        else:       #rekurens, pencarian titik pMax dan pemanggilan right secara rekursif
+        else:
             pMax = findPMax(PointsList, minAbs, maxAbs)
             PointsList.remove(pMax) 
-            
-            # pemanggilan fungsi pembagian ke kiri secara rekurif
-            # pembagian dilakukan secara konsisten dengan meninjau
-            # bagian kiri dari garis yang dibentuk antara minAbs - pMax
-            # dan pMax - maxAbs sampai list kosong
             leftTemp = self.divideLeft(self.divideList(PointsList, minAbs, pMax, 1), minAbs, pMax)
+            for point in leftTemp:
+              PointsList.remove(point)
             rightTemp = self.divideLeft(self.divideList(PointsList, pMax, maxAbs, 1), pMax, maxAbs)
+            for point in rightTemp:
+              PointsList.remove(point)
             return leftTemp + [pMax] + rightTemp
         
     def divideRight(self, PointsList, minAbs, maxAbs):
@@ -75,18 +74,17 @@ class Convex(object):
             - PointsList: list of points yang akan dibagi
             - minAbs, maxAbs: titik dengan absis minimum/maksimum
         '''
-        if len(PointsList) == 0:    #basis, list kosong
+        if len(PointsList) == 0: #basis apabila list kosong
             return []
-        else:       # rekursi, pencarian titik pMax dan pemanggilan left secara rekursif
+        else:
             pMax = findPMax(PointsList, minAbs, maxAbs)
             PointsList.remove(pMax)
-            
-            # pemanggilan fungsi pembagian ke kanan secara rekurif
-            # pembagian dilakukan secara konsisten dengan meninjau
-            # bagian kanan dari garis yang dibentuk antara minAbs - pMax
-            # dan pMax - maxAbssampai list kosong
             leftTemp = self.divideRight(self.divideList(PointsList, minAbs, pMax, -1), minAbs, pMax)
+            for point in leftTemp:
+              PointsList.remove(point)
             rightTemp = self.divideRight(self.divideList(PointsList, pMax, maxAbs, -1), pMax, maxAbs)
+            for point in rightTemp:
+              PointsList.remove(point)
             return leftTemp + [pMax] + rightTemp
 
     def mergeList(self, leftRes, rightRes, minAbs, maxAbs):
@@ -103,7 +101,6 @@ class Convex(object):
         leftRes = quickSort(leftRes)
         rightRes = quickSort(rightRes)
 
-        # proses penggabungan list
         mergedList.append(minAbs)
         for i in range(len(leftRes)):
             mergedList.append(leftRes[i])
@@ -114,12 +111,11 @@ class Convex(object):
         
         mergedList.append(mergedList[0])
 
-        # pembagian list menjadi dua bagian, list x dan y
-        # untuk dimasukkan ke plt.plot
         mergedX = [point.x for point in mergedList]
         mergedY = [point.y for point in mergedList]
 
         return [mergedX, mergedY]
+
 
 
     def ConvexHull(self, listOfPoints):

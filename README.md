@@ -25,18 +25,19 @@ Algoritma yang digunakan dalam pembuatan pustaka ini adalah algoritma _divide an
 - Python 3.9.4 64-bit, pengujian pada Python 3.7 / Google Colaboratory dapat dilakukan.
 - Package Installer for Python (pip) 22.0.2
 - _Visual Studio Code / PyCharm Community Edition 2020.2_ sebagai IDE pengujian
-- _Library Python_ sebagai berikut:
-    - matplotlib untuk _scatter plot_ `pip install matplotlib`
-    - pandas untuk _dataframe_ `pip install pandas`
-    - sklearn untuk pemanggilan database `pip install sklearn`
-    - scipy untuk pemanggilan model _convex hull_ `pip install scipy`
+- _Library Python_ sebagai berikut (untuk menjalankan file `main.py`):
+    - matplotlib untuk _scatter plot_                `pip install matplotlib`
+    - pandas untuk _dataframe_                       `pip install pandas`
+    - sklearn untuk pemanggilan database             `pip install sklearn`
+    - scipy untuk pemanggilan model _convex hull_    `pip install scipy`
+Instalasi untuk _PyCharm_ dapat mengikuti panduan berikut: 
+<a href = "https://www.jetbrains.com/help/pycharm/installing-uninstalling-and-upgrading-packages.html#interpreter-settings">[**KLIK LINK INI**]</a>
 
 ## Kompilasi
 1. Pastikan berada di folder `lib` (`root/src/lib`)
 2. Jalankan perintah berikut:
 ```pip install -e .```
 3. Tunggu hingga instalasi selesai, dan pustaka siap digunakan!
-
 
 ## Penggunaan
 
@@ -45,7 +46,7 @@ Algoritma yang digunakan dalam pembuatan pustaka ini adalah algoritma _divide an
 ```py
 from myConvexHull.process import Convex
 ```
-2. Inisiasi _class_ Convex, misal:
+2. Sebelum menggunakan fungsi, lakukan inisialisasi _class_ Convex, misal:
 ```py
 ConvexObj = Convex()
 ```
@@ -61,6 +62,8 @@ ConvexObj = Convex()
 ```
 4. Pemanggilan fungsi ConvexHull (`ConvexObj.ConvexHull()`) dapat dilakukan seperti demikian (contoh di `main.py`):
 ```py
+# inisialisasi class
+ConvexObj = Convex()
 for i in range(len(data.target_names)):
     bucket = df[df['Target'] == i].iloc[:, [2, 3]].values
     hull = ConvexObj.ConvexHull(bucket)
